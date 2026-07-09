@@ -1,0 +1,25 @@
+# 与 lora_decoder_olmocr_v1 完全相同的数据/超参，唯一区别：rswa_train=true。
+# 用于 A/B：全 causal 训练(v1) vs R-SWA 训练(本文件)，同数据同 hparam 对比长输出是否还崩。
+train_mode: lora_decoder
+mode: single_gundam
+train_jsonl: data/olmocr_train_v1/train.jsonl
+output_dir: outputs/lora_decoder_rswa_v1
+
+rswa_train: true
+rswa_window: 128
+
+gpu: "0"
+seed: 0
+batch_size: 1
+grad_accum: 2
+max_steps: 150
+warmup_steps: 15
+lr: 1.0e-4
+max_grad_norm: 1.0
+save_every: 50
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+gradient_checkpointing: true

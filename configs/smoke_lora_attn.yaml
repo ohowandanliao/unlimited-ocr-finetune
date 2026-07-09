@@ -1,0 +1,19 @@
+# 最小 smoke：单页 single_gundam，只在 self_attn 上加 LoRA，跑 20 步验证训练闭环。
+train_mode: lora_attn
+mode: single_gundam            # 训练统一走单页 gundam（覆盖 jsonl 里的 mode）
+train_jsonl: data/samples_olmocr/train.jsonl
+output_dir: outputs/smoke_lora_attn
+
+gpu: "0"
+seed: 0
+batch_size: 1
+grad_accum: 1
+max_steps: 20
+lr: 1.0e-4
+max_grad_norm: 1.0
+
+lora_r: 8
+lora_alpha: 16
+lora_dropout: 0.0
+
+gradient_checkpointing: true    # 单卡 4090 长序列(gundam)必须开，否则 OOM

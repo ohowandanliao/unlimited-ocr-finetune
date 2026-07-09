@@ -1,0 +1,8 @@
+# 训练依赖（在 torch 2.10 + transformers 4.57 上验证）
+torch>=2.1
+transformers>=4.46,<5
+peft>=0.11
+pyarrow>=14
+pymupdf>=1.24
+pyyaml>=6
+pillow>=10

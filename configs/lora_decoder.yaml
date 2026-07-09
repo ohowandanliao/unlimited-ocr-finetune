@@ -1,0 +1,20 @@
+# lora_decoder：attn + dense-mlp(layer0) + shared_experts（有意排除 64 routed experts）。
+# 3 步快验：确认 target breakdown(routed_experts=0) 且能训。
+train_mode: lora_decoder
+mode: single_gundam
+train_jsonl: data/samples_olmocr/train.jsonl
+output_dir: outputs/smoke_lora_decoder
+
+gpu: "0"
+seed: 0
+batch_size: 1
+grad_accum: 1
+max_steps: 3
+lr: 1.0e-4
+max_grad_norm: 1.0
+
+lora_r: 8
+lora_alpha: 16
+lora_dropout: 0.0
+
+gradient_checkpointing: true
