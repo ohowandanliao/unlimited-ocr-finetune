@@ -1,0 +1,33 @@
+[train] config: {'train_mode': 'lora_decoder', 'mode': 'multi_base', 'train_jsonl': 'data/olmocr_train_v1/train_multi.jsonl', 'output_dir': 'outputs/multibase_rswa_smoke', 'rswa_train': True, 'rswa_window': 128, 'gpu': '0', 'seed': 0, 'batch_size': 1, 'grad_accum': 1, 'max_steps': 20, 'warmup_steps': 5, 'lr': 0.0001, 'max_grad_norm': 1.0, 'save_every': 0, 'lora_r': 16, 'lora_alpha': 32, 'lora_dropout': 0.05, 'gradient_checkpointing': True}
+Some weights of UnlimitedOCRForCausalLM were not initialized from the model checkpoint at /mnt1/yixuan/unlimited-ocr-posttrain/models/baidu_Unlimited-OCR and are newly initialized: ['model.vision_model.embeddings.position_ids']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[model_loader] loaded; _attn_implementation=eager; use_cache=False
+[rswa] patched modeling_deepseekv2._prepare_4d_causal_attention_mask
+[train] R-SWA training mask ON (window=128)
+[train_modes] lora_decoder: 84 LoRA modules (attn=48, dense_mlp=3, shared_experts=33, routed_experts=0)
+[train_modes] trainable=3.98M / total=3340.08M (0.119%)
+[train] gradient_checkpointing enabled (non-reentrant, post-peft)
+[rswa] R-SWA mask APPLIED at mask-build: shape=(1, 1, 2030, 2030)
+[train] step 1/20 loss=0.9796 lr=2.00e-05
+[train] step 2/20 loss=0.3081 lr=4.00e-05
+[train] step 3/20 loss=0.5801 lr=6.00e-05
+[train] step 4/20 loss=0.1438 lr=8.00e-05
+[train] step 5/20 loss=0.1810 lr=1.00e-04
+[train] step 6/20 loss=0.2388 lr=9.89e-05
+[train] step 7/20 loss=0.1682 lr=9.57e-05
+[train] step 8/20 loss=0.1301 lr=9.05e-05
+[train] step 9/20 loss=0.3198 lr=8.35e-05
+[train] step 10/20 loss=0.4481 lr=7.50e-05
+[train] step 11/20 loss=0.1177 lr=6.55e-05
+[train] step 12/20 loss=0.3916 lr=5.52e-05
+[train] step 13/20 loss=0.9474 lr=4.48e-05
+[train] step 14/20 loss=0.2276 lr=3.45e-05
+[train] step 15/20 loss=0.0655 lr=2.50e-05
+[train] step 16/20 loss=0.0472 lr=1.65e-05
+[train] step 17/20 loss=0.1656 lr=9.55e-06
+[train] step 18/20 loss=0.4376 lr=4.32e-06
+[train] step 19/20 loss=0.0867 lr=1.09e-06
+[train] step 20/20 loss=0.1995 lr=0.00e+00
+[train] saved to outputs/multibase_rswa_smoke
+[train] loss first=0.9796 last=0.1995 finite=True
+train_ok

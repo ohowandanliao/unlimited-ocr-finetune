@@ -1,0 +1,26 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Some weights of UnlimitedOCRForCausalLM were not initialized from the model checkpoint at /mnt1/yixuan/unlimited-ocr-posttrain/models/baidu_Unlimited-OCR and are newly initialized: ['model.vision_model.embeddings.position_ids']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[model_loader] loaded; _attn_implementation=eager; use_cache=False; grad_ckpt=False
+dataset: 30 rows from data/samples_olmocr/train.jsonl
+
+===== single_gundam x2 =====
+  [olmocr_0000] mode=single_gundam ids=(2515,) img_tokens=1513 prompt_len=1517 target_tokens=998
+  [olmocr_0001] mode=single_gundam ids=(3056,) img_tokens=1513 prompt_len=1517 target_tokens=1539
+  batch: input_ids=(2, 3056) attn_sum=[2515, 3056] seq_mask_sum=[1513, 1513] spatial=[[3, 4], [3, 4]]
+  image tensor shapes: [((12, 3, 640, 640), (1, 3, 1024, 1024)), ((12, 3, 640, 640), (1, 3, 1024, 1024))]
+  logits=(2, 3056, 129280) loss=0.11930137872695923 finite=True
+
+===== single_base x1 =====
+  [olmocr_0000] mode=single_base ids=(1275,) img_tokens=273 prompt_len=277 target_tokens=998
+  batch: input_ids=(1, 1275) attn_sum=[1275] seq_mask_sum=[273] spatial=[[1, 1]]
+  image tensor shapes: [((1, 3, 1024, 1024), (1, 3, 1024, 1024))]
+  logits=(1, 1275, 129280) loss=0.11531350016593933 finite=True
+
+===== multi_base 2pages (ULTIMATE GOAL path) =====
+  [multi_demo_2p] mode=multi_base ids=(3093,) img_tokens=546 prompt_len=551 target_tokens=2542
+  batch: input_ids=(1, 3093) attn_sum=[3093] seq_mask_sum=[546] spatial=[[[1, 1], [1, 1]]]
+  image tensor shapes: [((1, 3, 1024, 1024), (2, 3, 1024, 1024))]
+  logits=(1, 3093, 129280) loss=0.3895007073879242 finite=True
+
+eval_forward_ok

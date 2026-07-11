@@ -1,0 +1,13 @@
+[train] config: {'train_mode': 'lora_decoder', 'mode': 'single_gundam', 'train_jsonl': 'data/samples_olmocr/train.jsonl', 'output_dir': 'outputs/smoke_lora_decoder', 'gpu': '0', 'seed': 0, 'batch_size': 1, 'grad_accum': 1, 'max_steps': 3, 'lr': 0.0001, 'max_grad_norm': 1.0, 'lora_r': 8, 'lora_alpha': 16, 'lora_dropout': 0.0, 'gradient_checkpointing': True}
+Some weights of UnlimitedOCRForCausalLM were not initialized from the model checkpoint at /mnt1/yixuan/unlimited-ocr-posttrain/models/baidu_Unlimited-OCR and are newly initialized: ['model.vision_model.embeddings.position_ids']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[model_loader] loaded; _attn_implementation=eager; use_cache=False
+[train_modes] lora_decoder: 84 LoRA modules (attn=48, dense_mlp=3, shared_experts=33, routed_experts=0)
+[train_modes] trainable=1.99M / total=3338.10M (0.060%)
+[train] gradient_checkpointing enabled (non-reentrant, post-peft)
+[train] step 1/3 loss=0.1048
+[train] step 2/3 loss=0.3968
+[train] step 3/3 loss=0.0837
+[train] saved to outputs/smoke_lora_decoder
+[train] loss first=0.1048 last=0.0837 finite=True
+train_ok

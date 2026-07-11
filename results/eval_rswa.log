@@ -1,0 +1,47 @@
+=== training done, running R-SWA eval ===
+Some weights of UnlimitedOCRForCausalLM were not initialized from the model checkpoint at /mnt1/yixuan/unlimited-ocr-posttrain/models/baidu_Unlimited-OCR and are newly initialized: ['model.vision_model.embeddings.position_ids']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[model_loader] loaded; _attn_implementation=eager; use_cache=False
+[R-SWA:base-load] use_mla=False self_attn(layer1)=SlidingWindowLlamaAttention sliding_window=128 sliding_window_size=128
+[R-SWA:after-merge] use_mla=False self_attn(layer1)=SlidingWindowLlamaAttention sliding_window=128 sliding_window_size=128
+[eval] merged adapter: outputs/lora_decoder_rswa_v1
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+
+[0] similarity=0.822  gt_len=5100 gen_len=7267
+  GT : Low-renin hypertension (LREH) accounts for an important subset of the hypertensive human population and is associated wi
+  GEN: and associated with the LREH. The LREH was a result of the LREH and the LREH were also associated with the LREH and the 
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[1] similarity=0.493  gt_len=6875 gen_len=6968
+  GT : plasma renin activity,\(^{15,16}\) this accounts for a small proportion of black patients with LREH.  Liddle’s syndrome 
+  GEN: and plasma renin activity, \( ^{15,16} \) this accounts for a small proportion of black patients with LREH.  Liddle’s sy
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[2] similarity=0.978  gt_len=1247 gen_len=1303
+  GT : Low-Renin and Nonmodulating Essential Hypertension David G. Warnock  Hypertension. 1999;34:395-397 doi: 10.1161/01.HYP.3
+  GEN: Hypertension JOURNAL OF THE AMERICAN HEART ASSOCIATION  Low-Renin and Nonmodulating Essential Hypertension David G. Warn
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[3] similarity=0.704  gt_len=4183 gen_len=4184
+  GT : Pakistan; Science of Climate Change and Droughts  Talial Masood  Pakistan has been rated amongst the 10 countries1 that 
+  GEN: 1. Pakistan has been rated amongst the 10 countries \( ^{1} \) that are at extreme risk to climate change given their sp
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[4] similarity=0.959  gt_len=4157 gen_len=4338
+  GT : Tweaking the Response System: A Case History from Pakistan's Civil Society  Syed Hasan Rizvi  In comparison to the staun
+  GEN: The Tweaking the Response System: A Case History from Pakistan's Civil Society  Syed Hasan Rizvi  In comparison to the s
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[5] similarity=0.300  gt_len=4034 gen_len=6134
+  GT : School Safety in Pakistan: Resilience Through Education  Raheela Saad  The disaster according to its definition is a ser
+  GEN: and disasters. The fundamental challenge related to school safety in Pakistan is particularly related to the feebly cons
+
+=== mean similarity over 6 held-out: 0.709 ===
+eval_infer_ok

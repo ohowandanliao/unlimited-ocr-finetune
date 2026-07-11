@@ -1,0 +1,26 @@
+Some weights of UnlimitedOCRForCausalLM were not initialized from the model checkpoint at /mnt1/yixuan/unlimited-ocr-posttrain/models/baidu_Unlimited-OCR and are newly initialized: ['model.vision_model.embeddings.position_ids']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[model_loader] loaded; _attn_implementation=eager; use_cache=False
+[R-SWA:base-load] use_mla=False self_attn(layer1)=SlidingWindowLlamaAttention sliding_window=128 sliding_window_size=128
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+
+[0] similarity=0.872  gt_len=5100 gen_len=6579
+  GT : Low-renin hypertension (LREH) accounts for an important subset of the hypertensive human population and is associated wi
+  GEN: <|det|>header [272, 40, 728, 66]<|/det|>Invited Editorial Commentary <|det|>title [120, 102, 880, 129]<|/det|>Low-Renin 
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[1] similarity=0.925  gt_len=6875 gen_len=7871
+  GT : plasma renin activity,\(^{15,16}\) this accounts for a small proportion of black patients with LREH.  Liddle’s syndrome 
+  GEN: <|det|>aside_text [13, 346, 33, 652]<|/det|>Downloaded from http://hyper.ahajournals.ory/ by guest on July 12, 2017 <|de
+The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Setting `pad_token_id` to `eos_token_id`:1 for open-end generation.
+
+[2] similarity=0.750  gt_len=1247 gen_len=2061
+  GT : Low-Renin and Nonmodulating Essential Hypertension David G. Warnock  Hypertension. 1999;34:395-397 doi: 10.1161/01.HYP.3
+  GEN: <|det|>aside_text [13, 346, 35, 654]<|/det|>Downloaded from http://hyper.ahajournals.ory/ by guest on July 12, 2017 <|de
+
+=== mean similarity over 3 held-out: 0.849 ===
+eval_infer_ok

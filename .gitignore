@@ -20,3 +20,9 @@ envs/
 .venv/
 *.egg-info/
 .DS_Store
+
+# --- 实验记录:刻意跟踪(覆盖上面 *.log / *.png 的忽略)---
+!results/
+!results/*.log
+!debug/test_images/
+!debug/test_images/*.png

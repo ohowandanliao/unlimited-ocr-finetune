@@ -1,0 +1,14 @@
+[1/4] download parquet + tarball (00_documents_eval_00000.tar.gz, ~191MB) via hf-mirror ...
+[2/4] read parquet, index rows belonging to this chunk ...
+    parquet columns: ['url', 'page_number', 'pdf_relpath', 'primary_language', 'is_rotation_valid', 'rotation_correction', 'is_table', 'is_diagram', 'natural_text', 'extras', 'id']
+    rows in this chunk with non-empty natural_text: 1120
+[3/4] extract PDFs from tar, render page-0 -> PNG ...
+[4/4] write JSONL (30 samples) + stats ...
+=== SAMPLE STATS ===
+n=30  jsonl=/mnt1/yixuan/unlimited-ocr-posttrain/train_uocr/data/samples_olmocr/train.jsonl
+target char_len: min=6 med=1976 max=6908
+img size: w[1063..1600] h[1237..1600]
+has_table=2  has_diagram=0
+--- first sample target (first 400 chars) ---
+Low-renin hypertension (LREH) accounts for an important subset of the hypertensive human population and is associated with salt-sensitivity and diuretic response and is also common in black patients. An interesting finding in LREH is the presence of normal plasma aldosterone levels.1,2 The ratio of plasma aldosterone to renin activity is used to screen for adrenal adenomas and hyperplasia3 and is 
+olmocr_sample_ok
