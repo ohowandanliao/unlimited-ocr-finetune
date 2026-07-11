@@ -3,7 +3,7 @@
 日期：2026-07-08
 状态：设计定稿，待实现。本文件是 `train_uocr` 工程的唯一事实源，取代/收敛 `unlimited_ocr_training_plan_2026-07-07.md` 中散落的方案讨论（旧 plan 仅留作历史）。
 
-远端根目录：`43.138.115.46:38795 /mnt1/yixuan/unlimited-ocr-posttrain`
+远端根目录：`<GPU-HOST-已迁移> /mnt1/yixuan/unlimited-ocr-posttrain`
 本地镜像：`unlimited-ocr-posttrain-local/`
 
 ---
