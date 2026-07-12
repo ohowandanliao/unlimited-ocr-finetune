@@ -2,7 +2,13 @@
 
 训练/评测数据来自 HuggingFace `allenai/olmOCR-mix-1025`（约 270K PDF 页，GPT-4.1 转写的
 `natural_text` 作为 GT，ODC-BY 许可）。本仓库**不含数据**（见 `.gitignore`），需在训练机上
-按下述步骤重建。国内直连 huggingface.co 被墙，全程走 hf-mirror。
+按下述步骤重建。**国内 GPU 机下载源有坑，先看下方"下载源"一节。**
+
+## 下载源（国内 GPU 机实测，重要）
+- **基座模型 → ModelScope**：`PaddlePaddle/Unlimited-OCR`（= HF `baidu/Unlimited-OCR`，同一模型，6.8G）。HF 那个在国内 GPU 机**下不动**：hf-mirror 限速到 ~0.1MB/s、huggingface.co 直连 unreachable、AutoDL `network_turbo` 也频繁 timeout；ModelScope 直连 ~10MB/s，十几分钟到手。
+- **olmOCR 数据 → HF**（脚本走 hf-mirror，慢但一次性能成）。ModelScope 上只有 `allenai/olmOCR-mix-0225`（**旧版 0225**，非本仓库用的 1025），要用需改脚本 subset/版本，暂不推荐。
+- **pip 依赖 → 清华源** `-i https://pypi.tuna.tsinghua.edu.cn/simple`，且**别开 network_turbo**（turbo 会拖慢非 HF/GitHub 的源）。**git clone → 开 turbo** `source /etc/network_turbo`（学术加速，直连 GitHub 慢）。
+- AutoDL：大件（模型/数据/venv）放持久盘 `/root/autodl-fs`（200G），别塞系统盘 `/`（30G）；conda 在 `/root/miniconda3`（非交互 shell 需 `source /etc/profile` 或用绝对路径）。
 
 ## 数据结构（HF 仓库内）
 - `{subset}_{split}.parquet` —— 每行一页：`natural_text`(GT) + `pdf_relpath`(指向 tarball 内某 PDF) + `page_number`/`primary_language`/`is_table`/`is_diagram`/`is_rotation_valid`/`id`
@@ -14,13 +20,14 @@
 export HF_ENDPOINT=https://hf-mirror.com     # HF 镜像（必须）
 export HF_HUB_DISABLE_XET=1                   # 关 xet
 export OLMOCR_DIR=./olmOCR-mix-1025           # 数据根，convert/download 共用
-export UOCR_MODEL_DIR=./models/baidu_Unlimited-OCR   # 基座模型目录
+export UOCR_MODEL_DIR=./models/Unlimited-OCR   # 基座模型目录（ModelScope: PaddlePaddle/Unlimited-OCR）
 ```
 
 ## 冒烟复现（重建 results/ 里那批实验用的数据）
 ```bash
-# 0) 基座模型（~10-16G，以实际为准）
-huggingface-cli download baidu/Unlimited-OCR --local-dir "$UOCR_MODEL_DIR"
+# 0) 基座模型（~6.8G）—— 用 ModelScope（国内 GPU 机 HF 下不动，见上方"下载源"）
+pip install -q modelscope
+modelscope download --model PaddlePaddle/Unlimited-OCR --local-dir "$UOCR_MODEL_DIR"
 
 # 1) 下训练块：00_documents/train 第 0 块（parquet + 1 个 tarball），约 1-3GB
 python scripts/download_olmocr.py --subset 00_documents --split train --chunks 00000
