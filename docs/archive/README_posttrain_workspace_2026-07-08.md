@@ -5,7 +5,7 @@ Unlimited-OCR 权重继续 post-training 的工作区。
 ## 这是什么
 基于 DeepSeek-OCR 的训练思路，做一套能加载 `baidu/Unlimited-OCR` 权重后训练的干净工程。
 关键事实：Unlimited-OCR 没改模型结构，只把 decoder 注意力从 MLA 换成 128 滑窗 MHA ring-buffer。
-详见 `docs/train_uocr_design_2026-07-08.md`（权威设计）。
+详见 `docs/DESIGN.md`（权威设计）。
 
 ## 目录地图
 - `models/baidu_Unlimited-OCR/` — [CANONICAL] 权重 + remote code。模型代码只认这里。
