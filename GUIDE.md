@@ -63,6 +63,21 @@ $PY scripts/eval_infer.py --adapter outputs/lora_decoder_rswa_v1 \
 ```
 期望：末行 `mean similarity over 6 held-out: ~0.7–0.9`。
 
+## 全参微调（可选，LoRA 的替代；都只训 LLM decoder，与 LoRA 互不影响）
+两种范围，代码里是独立 `train_mode`（`src/uocr_train/train_modes.py`）；全参会把 trainable 参数 upcast fp32 作 master weights。
+```bash
+# 【B】全参 backbone —— attn+dense+shared，排除 64 routed experts（~180M，fp32 master ≈17G，4090 24G 够）
+#     = lora_decoder 同款模块的「全参版」，做 LoRA-vs-全参 对照最干净
+nohup $PY -u scripts/train.py --config configs/full_backbone_rswa_v1.yaml > train_full_backbone.log 2>&1 &
+tail -f train_full_backbone.log
+
+# 【A】真·全参 decoder —— 含 64 routed experts（~2604M，fp32 master ≈53G，需 80G 单卡 A100/H100；多卡 DeepSpeed 另接）
+nohup $PY -u scripts/train.py --config configs/full_decoder_rswa_v1.yaml > train_full_decoder.log 2>&1 &
+```
+- 看点：`full_backbone: 解冻 84 个参数张量`、`84 个 trainable 张量 upcast fp32 作 master`、step 递增、`train_ok`。（full_backbone 已在 24G 实测跑通。）
+- 显存分水岭：routed experts 占 decoder 93%，训它们才需 80G，不训则 24G 够（experts 每 token 只激活 6/64，小数据上全参它们既费显存又低效——故 backbone 版默认冻住）。
+- **全参 eval 与 LoRA 不同**（TODO：尚未一键化）：full 模式 `save_pretrained` 存的是**完整模型**（非 adapter）。eval 时把 `UOCR_MODEL_DIR` 指到该 checkpoint、且**去掉 `--adapter`**；若报缺 modeling 文件，把基座里的 `*.py`/`config*.json` 拷进 checkpoint 目录。
+
 ## A/B（可选，重现「坑1」）
 `configs/lora_decoder_olmocr_v1.yaml` = 与 rswa_v1 同数据同超参、唯一区别 `rswa_train=false`（全 causal 训练）。跑它 + eval，长文档会复读崩（4090 上 mean 0.465 vs rswa 0.709），实证 train/infer 注意力必须一致。
 
