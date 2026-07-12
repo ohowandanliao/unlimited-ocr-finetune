@@ -15,8 +15,8 @@ PARQUET = "00_documents_eval.parquet"
 N = 30                      # 抽样条数
 RENDER_LONG_SIDE = 1600     # 渲染 PDF 首页长边像素
 
-ROOT = Path("/mnt1/yixuan/unlimited-ocr-posttrain")
-OUT = ROOT / "train_uocr" / "data" / "samples_olmocr"
+# 输出目录：默认 ./data/samples_olmocr，可用环境变量 OLMOCR_SAMPLE_OUT 覆盖
+OUT = Path(os.environ.get("OLMOCR_SAMPLE_OUT", "data/samples_olmocr"))
 RAW = OUT / "_raw"
 IMG = OUT / "images"
 for d in (RAW, IMG):

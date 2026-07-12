@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """把本地 olmOCR-mix-1025（parquet + pdf_tarballs）转成训练用 JSONL + 渲染 PNG。
 
-数据已在本地（/mnt1/yixuan/data/olmOCR-mix-1025），不再下载。逐 tarball 流式抽取，
-只渲染需要的页，避免解压整块到磁盘。
+数据需先下到本地（见 scripts/download_olmocr.py），路径用环境变量 OLMOCR_DIR 指定
+（或 --data-root 覆盖；默认 ./olmOCR-mix-1025）。逐 tarball 流式抽取，只渲染需要的页，
+避免解压整块到磁盘。
 
 用法示例：
   # 从 00_documents train 的第 0 块转最多 800 页
