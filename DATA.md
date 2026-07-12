@@ -10,6 +10,16 @@
 - **pip 依赖 → 清华源** `-i https://pypi.tuna.tsinghua.edu.cn/simple`，且**别开 network_turbo**（turbo 会拖慢非 HF/GitHub 的源）。**git clone → 开 turbo** `source /etc/network_turbo`（学术加速，直连 GitHub 慢）。
 - AutoDL：大件（模型/数据/venv）放持久盘 `/root/autodl-fs`（200G），别塞系统盘 `/`（30G）；conda 在 `/root/miniconda3`（非交互 shell 需 `source /etc/profile` 或用绝对路径）。
 
+## 环境搭建（conda base + 依赖）
+以 AutoDL PyTorch 镜像为例（自带 torch 2.5.1 / CUDA 12.4；conda 在 `/root/miniconda3`）：
+```bash
+# 用镜像自带 conda base（已有 torch），只补其余依赖；清华源、别开 network_turbo
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+```
+- **不需要 flash-attn**（全程 eager）。remote code 的额外依赖 `addict/easydict/timm/matplotlib` 已在 requirements.txt 里，缺了会在 `from_pretrained` 报 ModuleNotFoundError。
+- 非交互 SSH 里 conda 不在 PATH：用绝对路径 `/root/miniconda3/bin/python`，或先 `source /etc/profile`。
+- 跑任何脚本前先 `export UOCR_MODEL_DIR=<模型目录>`（model_loader 从这读）。
+
 ## 数据结构（HF 仓库内）
 - `{subset}_{split}.parquet` —— 每行一页：`natural_text`(GT) + `pdf_relpath`(指向 tarball 内某 PDF) + `page_number`/`primary_language`/`is_table`/`is_diagram`/`is_rotation_valid`/`id`
 - `pdf_tarballs/{subset}_{split}_{块号}.tar.gz` —— 对应 PDF

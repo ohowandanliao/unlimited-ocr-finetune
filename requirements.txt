@@ -1,8 +1,37 @@
-# 训练依赖（在 torch 2.10 + transformers 4.57 上验证）
+# 运行依赖 —— 在两处均验证跑通：
+#   4090:      torch 2.10.0 + transformers 4.57.1
+#   AutoDL 4090D: torch 2.5.1 + transformers 4.57.1（镜像自带 torch）
+# torch 不在此固定：用训练机镜像自带即可（AutoDL PyTorch 2.5.1 OK），或按 requirements-lock.txt 装 2.10。
 torch>=2.1
-transformers>=4.46,<5
-peft>=0.11
+
+# 核心训练/加载（pin 到已验证版本；模型 remote code 与这些对齐）
+transformers==4.57.1
+peft==0.19.1
+accelerate==1.14.0
+safetensors
+sentencepiece
+einops
+
+# 模型 remote code（trust_remote_code）额外依赖
+# —— 缺任一都会在 from_pretrained 时 ModuleNotFoundError（本次在新机逐个踩出来的）
+addict
+easydict
+timm
+matplotlib
+
+# 注意：不需要 flash-attn —— 加载/训练/推理全程走 eager（FA2 分支未启用，见 DESIGN.md §2.2）。
+# remote code 里虽 import flash_attn，但在未走的分支/try 中，缺它不影响。
+
+# 数据管线（olmOCR 转换 + 渲染 PDF->PNG）
 pyarrow>=14
 pymupdf>=1.24
-pyyaml>=6
+datasets
 pillow>=10
+requests
+tqdm
+
+# 下载工具
+modelscope          # 基座模型（国内 GPU 机走 ModelScope，见 DATA.md「下载源」）
+huggingface_hub     # olmOCR 数据（走 hf-mirror）
+
+pyyaml>=6
