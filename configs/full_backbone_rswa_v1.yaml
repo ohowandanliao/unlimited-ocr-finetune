@@ -1,0 +1,22 @@
+# 全参 backbone（attn + dense-mlp + shared_experts，排除 64 routed experts）
+# = lora_decoder_rswa_v1 同款模块的「全参版」，用于 LoRA vs 全参 的干净对照。
+# trainable ~182M，fp32 master，~17G 显存 → 单卡 4090 24G 可跑。
+train_mode: full_backbone
+mode: single_gundam
+train_jsonl: data/olmocr_train_v1/train.jsonl
+output_dir: outputs/full_backbone_rswa_v1
+
+rswa_train: true
+rswa_window: 128
+
+gpu: "0"
+seed: 0
+batch_size: 1
+grad_accum: 2
+max_steps: 150
+warmup_steps: 15
+lr: 1.0e-5              # 全参用更低 lr（LoRA 是 1e-4），别冲垮预训练权重
+max_grad_norm: 1.0
+save_every: 50
+
+gradient_checkpointing: true

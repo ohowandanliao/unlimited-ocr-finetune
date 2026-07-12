@@ -1,0 +1,23 @@
+# 真·全参 decoder（含 64 routed experts）= 解冻 model.layers.* 全部。
+# trainable ~2604M，fp32 master ~53G 显存 → 需 80G 单卡（A100/H100）。
+# 多卡（如 2x48G）走 DeepSpeed ZeRO 需另接（train.py 目前单卡）。
+# 注意：routed experts 每 token 只激活 6/64，小数据上全参它们梯度稀疏、易过拟合/不均衡 —— 谨慎用。
+train_mode: full_decoder
+mode: single_gundam
+train_jsonl: data/olmocr_train_v1/train.jsonl
+output_dir: outputs/full_decoder_rswa_v1
+
+rswa_train: true
+rswa_window: 128
+
+gpu: "0"
+seed: 0
+batch_size: 1
+grad_accum: 2
+max_steps: 150
+warmup_steps: 15
+lr: 5.0e-6              # 含 experts 的全参，lr 更保守
+max_grad_norm: 1.0
+save_every: 50
+
+gradient_checkpointing: true
