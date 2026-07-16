@@ -1,0 +1,26 @@
+# marcodsn 多页合并 smoke:验证"多页图 -> 一份跨页合并 markdown"能不能训得动。
+# 数据 = marcodsn/arxiv-markdown 的文档级 markdown 当 target + 渲染的 arxiv 页图当输入
+# (scripts/marcodsn/build_marcodsn.py 产出;target 已控长 <=25k 字符以适配上下文)。
+train_mode: lora_decoder
+mode: multi_base                                   # 覆盖 jsonl 里的 mode,统一 multi_base
+train_jsonl: data/marcodsn_v1/train.jsonl
+output_dir: outputs/marcodsn_smoke
+
+rswa_train: true                                   # 后训练必须 R-SWA mask(匹配推理,全 causal 有害)
+rswa_window: 128
+
+gpu: "0"
+seed: 0
+batch_size: 1
+grad_accum: 2
+max_steps: 40                                      # 冒烟,够看 loss 动、能存即可
+warmup_steps: 5
+lr: 1.0e-4
+max_grad_norm: 1.0
+save_every: 0                                      # 只结束存一次
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+gradient_checkpointing: true                       # 多页长序列必须开

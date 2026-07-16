@@ -40,7 +40,7 @@ pip install -q modelscope
 modelscope download --model PaddlePaddle/Unlimited-OCR --local-dir "$UOCR_MODEL_DIR"
 
 # 1) 下训练块：00_documents/train 第 0 块（parquet + 1 个 tarball），约 1-3GB
-python scripts/download_olmocr.py --subset 00_documents --split train --chunks 00000
+python scripts/download/download_olmocr.py --subset 00_documents --split train --chunks 00000
 
 # 2) 转训练 JSONL（最多 800 页，渲染 PNG，长边 1600）
 python scripts/convert_olmocr.py --subset 00_documents --split train \
@@ -49,7 +49,7 @@ python scripts/convert_olmocr.py --subset 00_documents --split train \
 #   -> data/olmocr_train_v1/train.jsonl（train_jsonl，训练 config 里指向它）
 
 # 3) 生成 30 条 eval 探针（脚本自动下 eval 块 ~191MB）
-python scripts/pull_sample_olmocr.py
+python scripts/download/pull_sample_olmocr.py
 #   -> data/samples_olmocr/train.jsonl（eval_infer.py 的 --jsonl，取前 6 即那张对照表）
 ```
 

@@ -4,9 +4,9 @@
 
 用法：
   # 冒烟：下 00_documents/train 第 0 块（parquet + 1 个 tarball）
-  python scripts/download_olmocr.py --subset 00_documents --split train --chunks 00000
+  python scripts/download/download_olmocr.py --subset 00_documents --split train --chunks 00000
   # 多块：
-  python scripts/download_olmocr.py --subset 00_documents --split train --chunks 00000,00001
+  python scripts/download/download_olmocr.py --subset 00_documents --split train --chunks 00000,00001
 输出到 OLMOCR_DIR（默认 ./olmOCR-mix-1025），与 convert_olmocr.py 的 --data-root 一致。
 """
 import argparse

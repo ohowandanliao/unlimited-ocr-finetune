@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """把本地 olmOCR-mix-1025（parquet + pdf_tarballs）转成训练用 JSONL + 渲染 PNG。
 
-数据需先下到本地（见 scripts/download_olmocr.py），路径用环境变量 OLMOCR_DIR 指定
+数据需先下到本地（见 scripts/download/download_olmocr.py），路径用环境变量 OLMOCR_DIR 指定
 （或 --data-root 覆盖；默认 ./olmOCR-mix-1025）。逐 tarball 流式抽取，只渲染需要的页，
 避免解压整块到磁盘。
 
@@ -9,6 +9,11 @@
   # 从 00_documents train 的第 0 块转最多 800 页
   python scripts/convert_olmocr.py --subset 00_documents --split train \
       --chunks 00_documents_train_00000 --max-samples 800 --out data/olmocr_train_v1
+  # 质量筛选 + 扩量（英文、跳坏旋转/图为主页、文本≥200 字、多块、3000 页）
+  python scripts/convert_olmocr.py --subset 00_documents --split train \
+      --chunks 00_documents_train_00000,00_documents_train_00001,00_documents_train_00002 \
+      --lang en --skip-bad-rotation --skip-diagram --min-chars 200 \
+      --max-samples 3000 --out data/olmocr_train_v2
   # 不指定 chunks 则按 parquet 顺序跨块直到取够 max-samples
 """
 import argparse
@@ -68,6 +73,10 @@ def main():
     ap.add_argument("--render-long-side", type=int, default=1600)
     ap.add_argument("--lang", default="", help="只保留该 primary_language（如 en）；空=不过滤")
     ap.add_argument("--skip-bad-rotation", action="store_true", help="跳过 is_rotation_valid=False")
+    ap.add_argument("--min-chars", type=int, default=0, help="natural_text 长度下限，剔太短/近空白页；0=不过滤")
+    ap.add_argument("--max-chars", type=int, default=0, help="natural_text 长度上限，剔超长页；0=不过滤")
+    ap.add_argument("--skip-diagram", action="store_true", help="跳过 is_diagram=True（图为主、文本少的页）")
+    ap.add_argument("--skip-table", action="store_true", help="跳过 is_table=True（注意：表格对 OCR 通常有价值，默认保留）")
     args = ap.parse_args()
 
     root = Path(args.data_root)
@@ -87,9 +96,18 @@ def main():
         txt = r["natural_text"]
         if not txt or not str(txt).strip():
             continue
+        tlen = len(str(txt).strip())
+        if args.min_chars and tlen < args.min_chars:
+            continue
+        if args.max_chars and tlen > args.max_chars:
+            continue
         if args.lang and r["primary_language"] != args.lang:
             continue
         if args.skip_bad_rotation and r["is_rotation_valid"] is False:
+            continue
+        if args.skip_diagram and r["is_diagram"] is True:
+            continue
+        if args.skip_table and r["is_table"] is True:
             continue
         chunk, arc = parse_relpath(r["pdf_relpath"])
         if not chunk:

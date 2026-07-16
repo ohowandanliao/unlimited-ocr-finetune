@@ -18,7 +18,11 @@ PATCH_SIZE = 16
 DOWNSAMPLE_RATIO = 4
 
 DEFAULT_SINGLE_PROMPT = "<image>document parsing."
-DEFAULT_MULTI_PROMPT = "<image>Multi page parsing."
+DEFAULT_MULTI_PROMPT = "<image>Multi page parsing."   # UOCR 原生(infer_multi):逐页 <PAGE> 输出
+# 北极星新任务:多页 -> 一份跨页合并的连续 markdown。用独立 prompt,不覆盖原生逐页行为。
+# 核实过 "Multi page parsing." 是 UOCR 专属(DeepSeek-OCR 用的是 Free OCR./Convert to markdown.),
+# 故可安全另起一个合并 prompt 让模型学新行为,推理时按 prompt 选合并/逐页。
+DEFAULT_MERGE_PROMPT = "<image>Multi page merge."
 
 # 每个 mode 的图像预处理预设（对齐 model.infer / infer_multi）
 MODE_PRESETS = {
