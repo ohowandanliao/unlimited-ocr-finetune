@@ -1,6 +1,6 @@
 # Unlimited-OCR 后训练 status（活日志，持续更新）
 
-最后更新：2026-07-16
+最后更新：2026-07-20
 设计权威文档：`docs/DESIGN.md`（结构稳定）。本文件是"做到哪、改了啥、踩过啥"的活日志。
 北极星：多页 PDF -> 一份统一、跨页合并的 markdown（目前无此能力、公开无现成数据；只记录不实现，见 design 0.5 节）。
 
@@ -8,14 +8,17 @@
 
 ## 当前状态
 
-干净训练工程 `train_uocr` 端到端跑通（单页）。链路：JSONL -> dataset -> processor -> collator -> model(eager) -> forward -> loss -> backward(GC non-reentrant) -> optim -> save adapter -> reload，全绿。
+**多页合并可行性已验证（2026-07-16），当前定调：维持、不走量**（用户 2026-07-19 拍板）。
+结论见 `docs/multipage_feasibility_2026-07-16.md`：管线可行，但"多页 -> 合并 markdown"的输出行为小 LoRA 没训出来（生成仍是基座原生格式；train loss 下降是 teacher-forcing 假象）。
+
+训练工程本体（单页链路）此前已端到端跑通：JSONL -> dataset -> processor -> collator -> model(eager) -> forward -> loss -> backward(GC non-reentrant) -> optim -> save adapter -> reload，全绿。
 
 已实测：
 - `eval_forward`：single_gundam×2、single_base、multi_base(两页) 的 forward->loss 均有限
 - `lora_attn` 20 步：loss 1.20->0.05，存 adapter，reload 后真实图 forward 通过
 - `lora_decoder` 3 步：84 模块(attn48 + dense3 + shared33，routed=0) / 1.99M
 
-工程文件（`/mnt1/yixuan/unlimited-ocr-posttrain/train_uocr`）：
+工程即本仓库（`unlimited-ocr-finetune`）；下方为最早单页 smoke 阶段的构成快照（路径 `/mnt1/yixuan/...` 属已弃用的旧 4090，见 change log 2026-07-15；当前工程结构以仓库 README/DESIGN 为准）：
 - src/uocr_train：constants dataset processor collator model_loader train_modes
 - scripts：pull_sample_olmocr eval_forward train reload_check
 - configs：smoke_lora_attn.yaml lora_decoder.yaml
@@ -42,13 +45,18 @@
 
 ## 变更日志（倒序）
 
+### 2026-07-20｜从 export 恢复 + 定调"维持、不走量"
+- 07-19 原 session 死于账号绑定错误;用 resume-from-export 从两份 txt 重建,brief 落盘 `.resume/brief_ocr_2026-07-19.md`(本地)。**07-16 之后无未落盘工作**:那轮已 commit+push(`6aae56d`+`7b394e9`)、工作树干净,丢的只是会话上下文。
+- **定调:可行性验证做完后依然不放量、维持现状**(用户"先不走量,维持")。本文件与 feasibility doc 里"放量"下一步暂不执行,除非用户重提。
+- 修正过期:旧"待提交"清单(本文件 + feasibility doc)那批文件均已在 `6aae56d` 提交。
+
 ### 2026-07-16｜多页可行性验证:Path A + 生成 eval 坐实(详见 docs/multipage_feasibility_2026-07-16.md)
 - **转向 Path A**:放弃自建 arxiv->pandoc/Lua 清洗(codex gpt-5.6-sol review 指出根子脆),改用现成 `marcodsn/arxiv-markdown`(docling 文档级 markdown)当 target。新 `scripts/marcodsn/`(fetch_pdfs / build_marcodsn / eval_merge)。
 - **28 样本多页合并 smoke**:lora_decoder + rswa 40 步,loss 2.21->0.25 finite,R-SWA 在 2054-token 多页序列 APPLIED,无 OOM,adapter 存 outputs/marcodsn_smoke。
 - **生成 eval 坐实关键结论**:自由生成是 **100% 原生 `<PAGE>` + `<|det|>grounding` 格式**(训练 target 里根本没有这套 markup)-> smoke LoRA 没掰动基座先验;**teacher-forcing loss 2.21->0.25 是假象**。可行性=管线可行、但"多页->合并 markdown"行为要大得多训练才出得来(几百上千篇/更多步/full-decoder 或更高 rank)。
 - **教训**:别信训练 loss 必看自由生成 eval;autodl 从开机计费、数据准备(下PDF/渲图)应在服务器关着时于 Mac 做。
 - **scripts 重组**:6 个下载脚本统一入 `scripts/download/`(fetch_arxiv / fetch_pdfs / download_olmocr / download_olmocr_full / download_mer17m / pull_sample_olmocr);pipeline 文件夹(arxiv2md / marcodsn)只留 build/处理;DATA/GUIDE/DESIGN/usage 引用已同步。
-- **待提交(等用户说"提交")**:`scripts/download/*`(下载脚本重组)、`scripts/marcodsn/{build_marcodsn,eval_merge}.py`、`configs/marcodsn_smoke.yaml`、`docs/multipage_feasibility_2026-07-16.md`。数据+adapter 双份(autodl-fs 持久 + Mac /Volumes/SharedData/marcodsn_v1)。
+- **已提交(2026-07-20 核实)**:上述 `scripts/download/*`、`scripts/marcodsn/{build_marcodsn,eval_merge}.py`、`configs/marcodsn_smoke.yaml`、`docs/multipage_feasibility_2026-07-16.md` 均已在 `6aae56d` 提交并 push。数据+adapter 双份(autodl-fs 持久 + Mac /Volumes/SharedData/marcodsn_v1)。
 
 ### 2026-07-15(续:P2 批量化 + 数据契约)
 - **fetch_arxiv.py 加固(根因修)**:原完整性判据 `psz>1000 and esz>200` 把 arxiv 对未渲染论文返回的 HTML 占位页(~7666B)当成功收下。改为按内容 magic 校验(PDF=`%PDF`、e-print=gzip/tar),HTML/0字节/无LaTeX源的 PDF-only 投稿一律拒;加 `--start` 偏移避开最前沿未 ready 的;加失败退避重试扛 arxiv 限流(实测:sleep=1 首篇后连续限流返 0 字节,sleep=3+重试后 5/6 good)。
@@ -97,7 +105,8 @@
 
 ## 下一步
 
-- **P2 续（当前主线）：批量数据。** fetch+build 两端都通:`fetch_arxiv.py`(Mac,已加固:magic 校验 / `--start` 偏移 / 退避重试)+ `build_batch.py`(服务器,读 manifest 逐篇 build)。当前:15 篇小批端到端验通 + 抽查合并 markdown 质量,通过后放量到可训练规模。可选提质:References(用源码 .bbl)、author 块、图密集/文本稀疏页过滤;必要时 LaTeXML 换保真。
-- **之后：文档整理 + 正确性审计**（README 加导航表；DESIGN/status/README 对齐代码、删过时"待实现/全 causal v1"结论；dataset doc 改名 DATASET_SURVEY）。见本地 `plan_multi_gundam_and_docs.md`（含 codex review）。
-- **待提交（等用户说"提交"）**：`configs/lora_multibase_smoke.yaml`（P1 config）、`scripts/convert_olmocr.py`（筛选开关）、`scripts/download/fetch_arxiv.py` + `scripts/arxiv2md/{clean_md.py,build_dataset.py,build_batch.py,clean.lua}`（P2 pipeline,fetch 已入 download/）、`src/uocr_train/constants.py`（新增 DEFAULT_MERGE_PROMPT),均本地未提交。
-- **暂缓**：multi_gundam（改 forward 的 crop 分支、分辨率向、与北极星正交）；full_decoder 多卡（accelerate 已装、deepspeed 未装；需 FSDP/ZeRO 分片，48G 单卡 full_decoder ~53G 差一点）。
+- **当前决定:维持、不走量**(2026-07-19 用户拍板)。多页可行性已验证完(结论见 feasibility doc);下面这些是"若将来重启放量"的路线图,非当前待办:
+  - 放量真训 merge 行为:几百上千篇 marcodsn + 更多步/epoch + 更高 rank 或 full_decoder。**每轮小规模先跑生成 eval 验行为是否真变,再决定放量**(上一轮最贵的教训:别信 teacher-forcing loss)。
+  - Path B(留后手):借 OCRFlux"整表切开-再合并"配方合成跨页切割样本,专训"合并"能力(OCRFlux-pubtabnet-cross 是表级 HTML、非文档级 markdown)。
+- **文档整理 + 正确性审计**(不开机、随时可做):README 加导航表;DESIGN/status/README 对齐代码、删过时"待实现/全 causal v1"结论;dataset doc 改名 DATASET_SURVEY。见本地 `plan_multi_gundam_and_docs.md`(含 codex review)。
+- **暂缓**:multi_gundam(改 forward 的 crop 分支、分辨率向、与北极星正交);full_decoder 多卡(accelerate 已装、deepspeed 未装;需 FSDP/ZeRO 分片,48G 单卡 full_decoder ~53G 差一点)。

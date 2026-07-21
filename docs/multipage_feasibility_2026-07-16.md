@@ -48,7 +48,7 @@
 **状态与去留**：整条弃用、转 Path A(marcodsn)。**代码保留作记录不删**——若哪天要追求
 比 docling **更高保真**的 target(公式逐字、跨页更准)，这套 **Lua-AST 思路**(或 Nougat 的 LaTeXML 路线)
 仍有捡回价值。文件：`scripts/download/fetch_arxiv.py`(下载,已入 download/) + `scripts/arxiv2md/{build_dataset,build_batch,clean_md,clean.lua}` +
-相关 config，均本地未提交。
+相关 config，均已于 `6aae56d` 提交并 push（2026-07-20 核实）。
 
 ### 2. 选 Path A：用现成的 marcodsn/arxiv-markdown 当 target
 调研（deep-research）结论：没有大量现成的"多页->合并 markdown"数据；文档级 markdown 主要来自
@@ -94,6 +94,8 @@ arxiv-source 派生集。选 `marcodsn/arxiv-markdown`（HF，CC-BY-4.0，单个
 
 ## 下一步（若继续推进）
 
+> 注（2026-07-19）：用户已拍板**维持、不走量**。下列均为"若将来重启放量"的路线图，非当前待办；当前决定以 `../status.md` 为准。
+
 - 放量数据：几百上千篇（marcodsn 有 3269 篇可选；Path A 管线现成、按需扩 N 即可）。
 - 加训练压力：更多步/epoch、更高 LoRA rank、或 full_decoder（48G 单卡 full_decoder ~53G 差一点，需 ZeRO/FSDP 或换卡）。
 - 数据/prompt 上加强区分度，帮模型条件化到"合并"而非原生。
@@ -105,5 +107,5 @@ arxiv-source 派生集。选 `marcodsn/arxiv-markdown`（HF，CC-BY-4.0，单个
 
 - 数据集 + adapter：服务器 `autodl-fs:/autodl-fs/data/unlimited-ocr-finetune/{data/marcodsn_v1, outputs/marcodsn_smoke}`（持久）
   且 Mac `/Volumes/SharedData/marcodsn_v1/`（train.jsonl 28 样本、images 132、pdfs、adapter_marcodsn_smoke）。
-- 脚本：`scripts/download/fetch_pdfs.py`（下载）+ `scripts/marcodsn/{build_marcodsn.py, eval_merge.py}` + `configs/marcodsn_smoke.yaml`（本地未提交）。
+- 脚本：`scripts/download/fetch_pdfs.py`（下载）+ `scripts/marcodsn/{build_marcodsn.py, eval_merge.py}` + `configs/marcodsn_smoke.yaml`（已于 `6aae56d` 提交并 push）。
 - marcodsn parquet：`autodl-fs:/autodl-fs/data/marcodsn-arxiv-markdown/train.parquet`（92M，可从 hf-mirror 重下）。

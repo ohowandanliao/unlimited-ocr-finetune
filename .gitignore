@@ -26,3 +26,6 @@ envs/
 !results/*.log
 !debug/test_images/
 !debug/test_images/*.png
+
+# 会话恢复 brief(本地,不入库)
+.resume/
